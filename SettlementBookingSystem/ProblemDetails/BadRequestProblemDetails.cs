@@ -1,5 +1,7 @@
 ﻿using FluentValidation;
 using Microsoft.AspNetCore.Http;
+using System;
+using System.Linq;
 
 namespace SettlementBookingSystem.ProblemDetails
 {
@@ -9,7 +11,7 @@ namespace SettlementBookingSystem.ProblemDetails
         {
             Status = StatusCodes.Status400BadRequest;
             Title = "Bad Request";
-            Detail = string.Join(";", ex.Errors);
+            Detail = ex.Errors.Count() != 0 ? string.Join(";", ex.Errors) : ex.Message;
             Type = "https://httpstatuses.com/400";
         }
     }

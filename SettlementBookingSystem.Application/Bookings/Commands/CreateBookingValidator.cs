@@ -6,13 +6,14 @@ namespace SettlementBookingSystem.Application.Bookings.Commands
     {
         public CreateBookingValidator()
         {
-            RuleFor(b => b.Name).NotEmpty().WithMessage("Name shoud not be empty");
-            When(b => !string.IsNullOrEmpty(b.BookingTime), () =>
-            {
-                RuleFor(b => b.ParseStartTime()).GreaterThanOrEqualTo(new System.TimeSpan(9, 0, 0));
-                RuleFor(b => b.ParseStartTime()).LessThanOrEqualTo(new System.TimeSpan(16, 0, 0));
-            });
-           
+            RuleFor(b => b.Name).NotEmpty()
+                .Matches(@"^[A-Za-z\s]*$")
+                .WithMessage("Name should be correct format example: Kevin .")
+                .Length(2, 20);
+
+            RuleFor(x => x.BookingTime).NotEmpty()
+                .Matches("[0-9]{1,2}:[0-9][0-9]")
+                .WithMessage("BookingTime should be correct format example: [09:00]");
         }
     }
 }

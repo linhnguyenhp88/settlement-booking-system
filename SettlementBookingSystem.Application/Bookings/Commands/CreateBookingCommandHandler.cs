@@ -32,17 +32,17 @@ namespace SettlementBookingSystem.Application.Bookings.Commands
             var bookingTimeStart = new System.TimeSpan(9, 0, 0);
             var bookingTimeEnd = new System.TimeSpan(16, 0, 0);
 
-            if (request.ParseStartTime() < bookingTimeStart)
+            if (ParseStartTime(request.BookingTime) < bookingTimeStart)
             {
-                throw new ValidationException("must be greater than or equal to 09:00:00");
+                throw new ValidationException("BookingTime must be greater than or equal to 09:00:00");
             }
 
-            if (request.ParseStartTime() > bookingTimeEnd)
+            if (ParseStartTime(request.BookingTime) > bookingTimeEnd)
             {
-                throw new ValidationException("must be less than or equal to 16:00:00");
+                throw new ValidationException("BookingTime must be less than or equal to 16:00:00");
             }
 
-            var BookingEntities = await _bookingRepository.GetBookingsAsync(Convert.ToDateTime(request.ParseStartTime().ToString()));
+            var BookingEntities = await _bookingRepository.GetBookingsAsync(Convert.ToDateTime(request.BookingTime));
 
             if ((BookingEntities.Any() && BookingEntities != null))
             {
@@ -54,8 +54,8 @@ namespace SettlementBookingSystem.Application.Bookings.Commands
 
             var booking = new Booking
             {
-                BookingEndTime = Convert.ToDateTime(request.ParseEndTime().ToString()),
-                BookingStartTime = Convert.ToDateTime(request.ParseStartTime().ToString()),
+                BookingEndTime = Convert.ToDateTime(ParseEndTime(request.BookingTime).ToString()),
+                BookingStartTime = Convert.ToDateTime(request.BookingTime),
                 Name = request.Name,
                 Id = Guid.NewGuid(),
                 CreatedAt = DateTimeOffset.Now
@@ -67,6 +67,20 @@ namespace SettlementBookingSystem.Application.Bookings.Commands
             return new BookingDto { BookingId = booking.Id };
         }
 
+        private TimeSpan ParseStartTime(string bookingTime)
+        {
+            string[] values = bookingTime.Split(":");
+            var startTime = new TimeSpan(int.Parse(values[0]), int.Parse(values[1]), 0);
 
+            return startTime;
+        }
+
+        private TimeSpan ParseEndTime(string bookingTime)
+        {
+            string[] values = bookingTime.Split(":");
+            var endTime = new TimeSpan(int.Parse(values[0]), int.Parse(values[1]), 0);
+
+            return endTime.Add(new TimeSpan(0, 59, 0));
+        }
     }
 }

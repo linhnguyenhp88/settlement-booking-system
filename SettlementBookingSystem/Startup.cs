@@ -1,3 +1,4 @@
+using System;
 using FluentValidation;
 using Hellang.Middleware.ProblemDetails;
 using Microsoft.AspNetCore.Builder;
@@ -13,7 +14,7 @@ using SettlementBookingSystem.Application.Exceptions;
 using SettlementBookingSystem.Infrastructure.EntityFrameworkCore;
 using SettlementBookingSystem.Infrastructure.Seed;
 using SettlementBookingSystem.ProblemDetails;
-using System;
+
 
 namespace SettlementBookingSystem
 {
@@ -73,7 +74,6 @@ namespace SettlementBookingSystem
             app.UseProblemDetails();
 
             app.UseHttpsRedirection();
-
 
             app.UseRouting();
 
