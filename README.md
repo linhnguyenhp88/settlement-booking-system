@@ -1,4 +1,17 @@
-# SettlementBookingTest
+# Settlement Booking System
+
+### Prerequisites
+
+Before you start, ensure you have the following tools and software installed on your system:
+
+- **Visual Studio 2022:** You'll need visual studio 2022 community installed.
+- **Visual Studio Code:** Alternative you can download visual studio code.
+
+You should be able to browse to the application by using the below URL :
+
+```
+SettlementBookingSystem API : https://localhost:44355
+```
 
 ## Versions
 
