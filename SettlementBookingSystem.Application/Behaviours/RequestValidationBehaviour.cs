@@ -1,5 +1,7 @@
 ﻿using FluentValidation;
 using MediatR;
+using Microsoft.Extensions.Logging;
+using SettlementBookingSystem.Application.Extensions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,11 +13,14 @@ namespace SettlementBookingSystem.Application.Behaviours
     public class RequestValidationBehaviour<TRequest, TResponse> : IPipelineBehavior<TRequest, TResponse>
         where TRequest : IRequest<TResponse>
     {
+        private readonly ILogger<RequestValidationBehaviour<TRequest, TResponse>> _logger;
         private readonly IEnumerable<IValidator<TRequest>> _validators;
 
-        public RequestValidationBehaviour(IEnumerable<IValidator<TRequest>> validators)
+        public RequestValidationBehaviour(IEnumerable<IValidator<TRequest>> validators,
+            ILogger<RequestValidationBehaviour<TRequest, TResponse>> logger)
         {
             _validators = validators;
+            _logger = logger;
         }
 
         public async Task<TResponse> Handle(
@@ -23,6 +28,10 @@ namespace SettlementBookingSystem.Application.Behaviours
             CancellationToken cancellationToken,
             RequestHandlerDelegate<TResponse> next)
         {
+            var typeName = request.GetGenericTypeName();
+
+            _logger.LogInformation($"Validating command {typeName}");
+
             if (next == null)
             {
                 throw new ArgumentNullException(nameof(next));
@@ -37,6 +46,8 @@ namespace SettlementBookingSystem.Application.Behaviours
                     .SelectMany(result => result.Errors)
                     .Where(f => f != null)
                     .ToList();
+
+                _logger.LogWarning($"Validation errors - {typeName} - Command: {request} - Errors: {failures}");
 
                 if (failures.Count != 0)
                 {
